@@ -1407,7 +1407,7 @@
         const m = miss();
         if (m.length > 0) { setErrs(true); const el = document.getElementById(`f-${m[0]}`); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
         if (view === "pre") { setSaving(true); const cr = await checkCode("pre", ans.q1); setSaving(false); if (cr === "exists") { setDupCode(ans.q1); const el = document.getElementById("f-q1"); if (el) el.scrollIntoView({ behavior: "smooth", block: "center" }); return; } }
-        const now = new Date(); const ts = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().replace("Z", "");
+        const ts = new Date().toLocaleString("sv-SE", { timeZone: "America/Los_Angeles" }).replace(" ", "T"); /* SOU (Pacific Time) */
         const fa = { ...ans }; Object.keys(oth).forEach(k => { if (oth[k]) fa[`${k}_other`] = oth[k] });
         fa.lang = LANG; // 回答言語 (ja / en)
         sendToSheets(view, fa, ts);
