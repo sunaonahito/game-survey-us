@@ -537,8 +537,54 @@
    }
   ]
  },
- "meaning": {
+ "cop": {
   "title": "Section 3",
+  "inst": "Thinking about how you generally deal with stressful or difficult situations in your life, how accurately does each statement describe you?",
+  "scaleNote": [
+   "1 = Does not apply at all",
+   "2 = Applies somewhat",
+   "3 = Applies moderately",
+   "4 = Applies very much"
+  ],
+  "scale": {
+   "min": 1,
+   "max": 4,
+   "labels": [
+    "Does not apply at all",
+    "",
+    "",
+    "Applies very much"
+   ]
+  },
+  "items": [
+   {
+    "id": "q56",
+    "t": "I try to see a stressful situation in a different light to make it seem more positive."
+   },
+   {
+    "id": "q57",
+    "t": "I look for the good in what is happening, even in difficult situations."
+   },
+   {
+    "id": "q58",
+    "t": "I change or grow as a person in a good way through difficult experiences."
+   },
+   {
+    "id": "q59",
+    "t": "I come out of difficult experiences with a clearer sense of what is important in life."
+   },
+   {
+    "id": "q60",
+    "t": "I rediscover what is important in life through the choices I make."
+   },
+   {
+    "id": "q61",
+    "t": "I try to focus on how I can learn from difficult experiences."
+   }
+  ]
+ },
+ "meaning": {
+  "title": "Section 4",
   "inst": "The following statements express your thoughts about your life as a whole. Please indicate the extent to which each statement applies to you.",
   "scaleNote": [
    "1 = Strongly Disagree",
@@ -590,7 +636,7 @@
   ]
  },
  "play": {
-  "title": "Section 4",
+  "title": "Section 5",
   "inst": "People differ in how they tend to approach everyday situations. The following statements ask about your general tendencies and preferences. Please indicate how well each statement describes you based on your first impression.",
   "scaleNote": [
    "1 = Strongly Disagree",
@@ -1557,6 +1603,7 @@
             <div id="f-q10"><p style={{ fontFamily: "'Noto Serif JP',serif", fontSize: 15, color: P.acc, margin: "0 0 12px", fontWeight: 600, letterSpacing: 0.5 }}>PART II: PSYCHOMETRIC MEASURES</p></div>
             <SS key="en-swls" section={PRE_EN.swls} storageKey="survey_order_pre_swls" answers={ans} set={sa} />
             <div id="f-q18"><SS key="en-cses" section={PRE_EN.cses} storageKey="survey_order_pre_cses" answers={ans} set={sa} /></div>
+            <SS key="en-cop" section={PRE_EN.cop} storageKey="survey_order_pre_cop_en" answers={ans} set={sa} />
             <SS key="en-3dm" section={PRE_EN.meaning} storageKey="survey_order_pre_3dm_en" answers={ans} set={sa} />
             <SS key="en-play" section={PRE_EN.play} storageKey="survey_order_pre_play_en" answers={ans} set={sa} />
           </> : <>
