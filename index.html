@@ -1168,12 +1168,16 @@
       const [autoLoaded, setAutoLoaded] = useState(false);
       const [touched, setTouched] = useState(false);
       const [status, setStatus] = useState(""); // "" | "checking" | "exists" | "none" | "unknown"
+      const [generated, setGenerated] = useState(false);
       const latest = React.useRef("");
+      const ID_WORDS = ["maple", "river", "cloud", "ember", "willow", "harbor", "meadow", "lantern", "pebble", "aurora", "cedar", "comet", "falcon", "glacier", "juniper", "orchid", "sparrow", "tundra", "violet", "zephyr", "amber", "breeze", "coral", "dune", "fern", "hazel", "iris", "moss", "opal", "pine", "quartz", "sage"];
+      const genId = () => { const a = new Uint32Array(2); (window.crypto || window.msCrypto).getRandomValues(a); return ID_WORDS[a[0] % ID_WORDS.length] + (1000 + (a[1] % 9000)); };
+      const onGen = async () => { for (let i = 0; i < 5; i++) { const c = genId(); setText(c); setTouched(true); onChange(c); latest.current = c; setStatus("checking"); const r = await checkCode("pre", c); if (r !== "exists" || i === 4) { if (latest.current === c) setStatus(r); setGenerated(true); return; } } };
       const n = norm(text);
       const valid = okFormat(n);
 
       const runCheck = async (code) => { latest.current = code; setStatus("checking"); const r = await checkCode("pre", code); if (latest.current === code) setStatus(r); };
-      const onText = (v) => { setText(v); setStatus(""); latest.current = ""; const nn = norm(v); onChange(okFormat(nn) ? nn : ""); };
+      const onText = (v) => { setText(v); setGenerated(false); setStatus(""); latest.current = ""; const nn = norm(v); onChange(okFormat(nn) ? nn : ""); };
       const onBlurText = (e) => { e.target.style.borderColor = P.bdr; setTouched(true); if (valid && status === "") runCheck(n); };
       useEffect(() => { if (isPost && !value) { try { const saved = localStorage.getItem("survey_anon_code"); if (saved) { const sv = norm(saved); if (okFormat(sv)) { setText(sv); onChange(sv); setAutoLoaded(true); runCheck(sv); } } } catch (e) { } } }, []);
 
@@ -1200,6 +1204,8 @@
           </div>}
         <input type="text" value={text} onChange={e => onText(e.target.value)} placeholder={T("例：sakura2468")} maxLength={40} autoComplete="off" autoCapitalize="none" spellCheck={false} style={fs}
           onFocus={e => e.target.style.borderColor = P.pri} onBlur={onBlurText} />
+        {!isPost && <div style={{ marginTop: 10 }}><button type="button" onClick={onGen} style={{ padding: "8px 16px", background: "transparent", color: P.acc, border: `1.5px solid ${P.acc}`, borderRadius: 8, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>{LANG === "en" ? "Generate a random ID for me" : "ランダムなコードを自動で作成する"}</button></div>}
+        {!isPost && generated && valid && <p style={{ fontSize: 13, color: P.acc, margin: "10px 0 0", lineHeight: 1.7, padding: "10px 14px", background: "rgba(255,255,255,0.06)", borderRadius: 8 }}>{LANG === "en" ? <>Your ID is <b style={{ fontFamily: "monospace", color: P.txt, letterSpacing: 1 }}>{n}</b>. Please write it down or take a screenshot — you will need the same ID for the post-activity survey. You can press the button again to get a different one, or type your own.</> : <>あなたのコードは <b style={{ fontFamily: "monospace", color: P.txt, letterSpacing: 1 }}>{n}</b> です。事後アンケートでも同じコードが必要になるので、メモまたはスクリーンショットで控えてください。別のコードにしたい場合はもう一度ボタンを押すか、ご自身で入力してください。</>}</p>}
         {msg}
         {valid && n !== text && <p style={{ fontSize: 12, color: P.mut, margin: "8px 0 0" }}>{T("使用されるコード：")}<span style={{ fontFamily: "monospace", color: P.txt }}>{n}</span></p>}
       </div>;
