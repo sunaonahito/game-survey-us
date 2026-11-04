@@ -1267,6 +1267,10 @@
       </ul>;
     }
 
+    function SupportInline() {
+      return <p style={{ margin: 0, lineHeight: 1.8 }}><strong>SOU Telus Health Student Support:</strong> Free and confidential mental health support available to SOU students 24 hours a day through online, app-based, and telephone services. <strong>988 Suicide &amp; Crisis Lifeline:</strong> Free and confidential crisis support available 24 hours a day by phone, text, or online chat. (Call or text <a href="tel:988" style={{ color: P.priL }}>988</a>.) <strong>Jackson County Mental Health Crisis Hotline:</strong> <a href="tel:5417748201" style={{ color: P.priL }}>541-774-8201</a>, available 24 hours a day.</p>;
+    }
+
     function ConsentScreen({ lang, onChange, onAgree, onDecline }) {
       const [choice, setChoice] = useState("");
       const qref = React.useRef(null);
@@ -1352,7 +1356,7 @@
               <li style={li}>If you do not wish to participate in the study or withdraw before completing the study activity, you may complete an alternative extra-credit activity provided through a separate course module.</li>
               <li style={li}>If you experience emotional discomfort or distress related to the study activities, you are encouraged to seek support from an appropriate mental health resource.</li>
               <li style={li}>The following free or confidential resources are available:
-                <div style={{ marginTop: 8 }}><SupportList /></div>
+                <div style={{ marginTop: 8 }}><SupportInline /></div>
               </li>
             </ul>
 
