@@ -1466,6 +1466,7 @@
         const ts = new Date().toLocaleString("sv-SE", { timeZone: "America/Los_Angeles" }).replace(" ", "T"); /* SOU (Pacific Time) */
         const fa = { ...ans }; Object.keys(oth).forEach(k => { if (oth[k]) fa[`${k}_other`] = oth[k] });
         fa.lang = LANG; // 回答言語 (ja / en)
+        fa.site = "straying"; // 回答元サイト (dice / straying)
         sendToSheets(view, fa, ts);
         if (view === "pre" && fa.q1) { try { localStorage.setItem("survey_anon_code", fa.q1) } catch (e) { } }
         setDone(true); window.scrollTo(0, 0);
