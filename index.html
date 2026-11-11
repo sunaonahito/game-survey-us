@@ -45,6 +45,18 @@
     const GAME_URL = "https://dokkorase.github.io/straying-playtest/tyrano/";
     const GAME_URL_EN = "https://dokkorase.github.io/straying-playtest/tyrano/";
     const GAME_NOTE_EN = "";
+    // --- 無作為割付 (EN): 同意時に Dice of Destiny / Straying を 1:1 で割り付け、端末に保存 ---
+    const ASSIGN_KEY = "survey_assigned_game"; let ASSIGN_MEM = "";
+    const DICE_URL_FROM_GAME = "https://sunaonahito.github.io/dice-of-destiny-us/?from=game";
+    function getAssigned(create) {
+      try { const v = localStorage.getItem(ASSIGN_KEY); if (v === "dice" || v === "straying") return v; } catch (e) { }
+      if (ASSIGN_MEM) return ASSIGN_MEM;
+      if (!create) return "";
+      const a = new Uint32Array(1); (window.crypto || window.msCrypto).getRandomValues(a);
+      ASSIGN_MEM = (a[0] % 2) ? "dice" : "straying";
+      try { localStorage.setItem(ASSIGN_KEY, ASSIGN_MEM) } catch (e) { }
+      return ASSIGN_MEM;
+    }
 
     let LANG = "en"; // default: English (US study); ?lang=ja or the switch selects Japanese
     try {
@@ -1466,7 +1478,7 @@
         const ts = new Date().toLocaleString("sv-SE", { timeZone: "America/Los_Angeles" }).replace(" ", "T"); /* SOU (Pacific Time) */
         const fa = { ...ans }; Object.keys(oth).forEach(k => { if (oth[k]) fa[`${k}_other`] = oth[k] });
         fa.lang = LANG; // 回答言語 (ja / en)
-        fa.site = "straying"; // 回答元サイト (dice / straying)
+        fa.site = LANG === "en" ? (getAssigned(false) || ({ "Dice of Destiny（ダイスゲーム）": "dice", "Straying（ノベルゲーム）": "straying" }[ans.q57] || "")) : "straying"; // 割り付けられたゲーム (dice / straying)
         sendToSheets(view, fa, ts);
         if (view === "pre" && fa.q1) { try { localStorage.setItem("survey_anon_code", fa.q1) } catch (e) { } }
         setDone(true); window.scrollTo(0, 0);
@@ -1475,7 +1487,7 @@
       // CONSENT (English version only): Yes -> continue / No -> end
       if (lang === "en" && !consentEn) return declined
         ? <DeclineScreen lang={lang} onChange={switchLang} onBack={() => setDeclined(false)} />
-        : <ConsentScreen lang={lang} onChange={switchLang} onDecline={() => setDeclined(true)} onAgree={() => { try { localStorage.setItem(CONSENT_KEY, String(Date.now())) } catch (e) { } setConsentEn(true) }} />;
+        : <ConsentScreen lang={lang} onChange={switchLang} onDecline={() => setDeclined(true)} onAgree={() => { try { localStorage.setItem(CONSENT_KEY, String(Date.now())) } catch (e) { } getAssigned(true); setConsentEn(true) }} />;
 
       // HOME
       if (view === "home") return <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -1505,7 +1517,7 @@
               </div>
             </button>
 
-            <a href={LANG === "en" ? GAME_URL_EN : GAME_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: "linear-gradient(135deg,rgba(232,164,74,0.15),rgba(200,130,40,0.2))", border: "1.5px solid rgba(232,164,74,0.4)", borderRadius: 12, padding: "24px 28px", textAlign: "left", cursor: "pointer", transition: "all 0.2s", boxShadow: "0 2px 8px rgba(0,0,0,0.2)", textDecoration: "none" }}
+            <a href={LANG === "en" ? (getAssigned(true) === "dice" ? DICE_URL_FROM_GAME : GAME_URL_EN) : GAME_URL} target="_blank" rel="noopener noreferrer" style={{ display: "block", background: "linear-gradient(135deg,rgba(232,164,74,0.15),rgba(200,130,40,0.2))", border: "1.5px solid rgba(232,164,74,0.4)", borderRadius: 12, padding: "24px 28px", textAlign: "left", cursor: "pointer", transition: "all 0.2s", boxShadow: "0 2px 8px rgba(0,0,0,0.2)", textDecoration: "none" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = P.acc; e.currentTarget.style.boxShadow = "0 4px 20px rgba(232,164,74,0.3)"; e.currentTarget.style.background = "linear-gradient(135deg,rgba(232,164,74,0.25),rgba(200,130,40,0.3))" }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(232,164,74,0.4)"; e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)"; e.currentTarget.style.background = "linear-gradient(135deg,rgba(232,164,74,0.15),rgba(200,130,40,0.2))" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -1630,7 +1642,7 @@
             <div id="f-q49"><SS key="pe-refl" section={POST_EN.refl} storageKey="survey_order_post_refl" answers={ans} set={sa} /></div>
             <div style={{ marginBottom: 32 }}>
               <div style={{ background: "linear-gradient(90deg,#1E3A6E,#2B5EA7)", color: "#fff", padding: "16px 24px", borderRadius: "10px 10px 0 0", fontFamily: "'Noto Serif JP',serif" }}><h2 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>PART III: QUALITATIVE WRITTEN REFLECTION</h2></div>
-              <div style={{ background: P.card, border: `1px solid ${P.bdr}`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "8px 24px 16px" }}><p style={{ fontSize: 14, color: "#fff", lineHeight: 1.8, margin: "12px 0 8px" }}>Please write a brief reflection responding to the prompt below. There are no right or wrong answers; we are interested in your personal thoughts and insights.</p><div id="f-q70"><DQ q={POST_EN.reflect} value={ans.q70} onChange={v => sa("q70", v)} ov={oth.q70} onOv={v => so("q70", v)} /></div><div id="f-q71"><DQ q={POST_EN.repeat} value={ans.q71} onChange={v => sa("q71", v)} ov={oth.q71} onOv={v => so("q71", v)} /></div>{ans.q71 && ans.q71.indexOf("Yes") === 0 && <div id="f-q72"><DQ q={POST_EN.longit} value={ans.q72} onChange={v => sa("q72", v)} ov={oth.q72} onOv={v => so("q72", v)} /></div>}{ans.q71 && ans.q71.indexOf("Yes") === 0 && POST.gameSelect.filter(q => q.id !== "q58").map(q => <div key={q.id} id={`f-${q.id}`}><DQ q={{ ...q, dn: "" }} value={ans[q.id]} onChange={v => sa(q.id, v)} ov={oth[q.id]} onOv={v => so(q.id, v)} /></div>)}</div>
+              <div style={{ background: P.card, border: `1px solid ${P.bdr}`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "8px 24px 16px" }}><p style={{ fontSize: 14, color: "#fff", lineHeight: 1.8, margin: "12px 0 8px" }}>Please write a brief reflection responding to the prompt below. There are no right or wrong answers; we are interested in your personal thoughts and insights.</p><div id="f-q70"><DQ q={POST_EN.reflect} value={ans.q70} onChange={v => sa("q70", v)} ov={oth.q70} onOv={v => so("q70", v)} /></div><div id="f-q71"><DQ q={POST_EN.repeat} value={ans.q71} onChange={v => sa("q71", v)} ov={oth.q71} onOv={v => so("q71", v)} /></div>{ans.q71 && ans.q71.indexOf("Yes") === 0 && <div id="f-q72"><DQ q={POST_EN.longit} value={ans.q72} onChange={v => sa("q72", v)} ov={oth.q72} onOv={v => so("q72", v)} /></div>}{!getAssigned(false) && POST.gameSelect.filter(q => q.id !== "q58").map(q => <div key={q.id} id={`f-${q.id}`}><DQ q={{ ...q, dn: "" }} value={ans[q.id]} onChange={v => sa(q.id, v)} ov={oth[q.id]} onOv={v => so(q.id, v)} /></div>)}</div>
             </div>
           </> : <>
             <div id="f-q2"><SS section={POST.swls} storageKey="survey_order_post_swls" answers={ans} set={sa} /></div>
